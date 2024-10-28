@@ -9,34 +9,32 @@ options *flags(int argc, char **argv) {
                                    {NULL, 0, NULL, 0}};
   int flag;
   while ((flag = getopt_long(argc, argv, small_fl, long_fl, NULL)) != -1) {
-    switch (flag) {
-      case 'b':
-        flags->b = 1;
-        break;
-      case 'e':
-        flags->e = 1;
-        break;
-      case 'E':
-        flags->E = 1;
-        break;
-      case 'n':
-        flags->n = 1;
-        break;
-      case 's':
-        flags->s = 1;
-        break;
-      case 't':
-        flags->t = 1;
-        break;
-      case 'T':
-        flags->T = 1;
-        break;
-      case 'v':
-        flags->v = 1;
-        break;
-    }
+      flag_choice(flag, flags);
   }
   return flags;
+}
+
+void flag_choice(int flag, options *flags)
+{
+    if(flag=='b'){
+        flags->b=1;
+    } else if(flag=='e'){
+        flags->b = 1;
+    } else if(flag=='E'){
+        flags->E = 1;
+    } else if(flag=='n'){
+        flags->n = 1;
+    } else if(flag=='s'){
+        flags->s = 1;
+    } else if(flag=='t'){
+        flags->t = 1;
+    } else if(flag=='T'){
+        flags->T = 1;
+    } else if(flag=='v'){
+        flags->v = 1;
+    } else {
+        flags->no_flags=1;
+    }
 }
 
 int main(int argc, char *argv[]) {
