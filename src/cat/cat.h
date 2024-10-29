@@ -13,5 +13,8 @@ typedef struct options {
   int no_flags;
 } options;
 options *flags(int, char **);
-void flag_choice(int flag, options *flags);
+void flag_choice(int, options *);
+void cat(int, char **, options *);
+int output(FILE *, options *);
+void mutual_exclusion(options *);
 #endif

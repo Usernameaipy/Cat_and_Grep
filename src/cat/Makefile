@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -pedantic -std=c11
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11
 BUILDDIR = ../../build/
 # TESTFLAGS = 
 
@@ -15,7 +15,7 @@ common.o : ../common/common.c ../common/common.h
 	$(CC) $(CFLAGS) -c ../common/common.c -o common.o
 
 start_cat: 
-	$(BUILDDIR)cat
+	$(BUILDDIR)cat -b text.txt
 
 clean : 
 	rm -rf *.o
