@@ -18,7 +18,7 @@ void flag_choice(int flag, options *flags) {
   if (flag == 'b') {
     flags->b = 1;
   } else if (flag == 'e') {
-    flags->b = 1;
+    flags->e = 1;
   } else if (flag == 'E') {
     flags->E = 1;
   } else if (flag == 'n') {
@@ -58,18 +58,27 @@ void cat(int argc, char **argv, options *flag) {
 }
 
 int output(FILE *fp, options *flag) {
-  char buffer[4096] = {0};
-  int b_cnt = 1;
-  while (fgets(buffer, sizeof(buffer), fp)) {
-    if (flag->b == 1) {
-      if (buffer[0] != '\n') {
-        fprintf(stdout, "%6d  ", b_cnt);
-        ++b_cnt;
-      }
-    }
-    fprintf(stdout, "%s", buffer);
+  char s = 0, s_prev = 0;
+  static int number = 0;
+  while ((s = fgetc((fp == NULL) ? stdin : fp)) != EOF) {
+    if (flag->b) flag_b(&number, s, s_prev);
+    if (flag->e) flag_e(s);
+    fprintf(stdout, "%c", s);
+    s_prev = s;
   }
-  return 1;
+  return 0;
+}
+
+void flag_b(int *number, char s, char s_prev) {
+  if ((!(*number) && !s_prev && s != '\n') || (s_prev == '\n' && s != '\n') ||
+      (number && !s_prev && s != '\n')) {
+    (*number)++;
+    fprintf(stdout, "%6d\t", *number);
+  }
+}
+
+void flag_e(char s) {
+  if (s == '\n') fprintf(stdout, "$");
 }
 
 int main(int argc, char *argv[]) {
