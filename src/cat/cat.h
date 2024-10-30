@@ -18,5 +18,6 @@ void cat(int, char **, options *);
 int output(FILE *, options *);
 void flag_b(int *, char, char);
 void flag_e(char);
+void flag_n(int *, char, char);
 void mutual_exclusion(options *);
 #endif

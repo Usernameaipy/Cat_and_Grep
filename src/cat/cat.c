@@ -62,7 +62,8 @@ int output(FILE *fp, options *flag) {
   static int number = 0;
   while ((s = fgetc((fp == NULL) ? stdin : fp)) != EOF) {
     if (flag->b) flag_b(&number, s, s_prev);
-    if (flag->e) flag_e(s);
+    if (flag->n) flag_n(&number, s_prev, s);
+    if (flag->e || flag->E) flag_e(s);
     fprintf(stdout, "%c", s);
     s_prev = s;
   }
@@ -79,6 +80,13 @@ void flag_b(int *number, char s, char s_prev) {
 
 void flag_e(char s) {
   if (s == '\n') fprintf(stdout, "$");
+}
+
+void flag_n(int *number, char s_prev, char s) {
+  if (s_prev == '\n' || (number && !s_prev && s != '\n')) {
+    (*number)++;
+    fprintf(stdout, "%6d\t", *number);
+  }
 }
 
 int main(int argc, char *argv[]) {
