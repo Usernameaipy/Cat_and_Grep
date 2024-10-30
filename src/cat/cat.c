@@ -64,7 +64,8 @@ int output(FILE *fp, options *flag) {
     if (flag->b) flag_b(&number, s, s_prev);
     if (flag->n) flag_n(&number, s_prev, s);
     if (flag->e || flag->E) flag_e(s);
-    fprintf(stdout, "%c", s);
+    if (flag->t || flag->T) flag_t(s);
+    if((flag->t && s!='\t') || (!flag->t)) fprintf(stdout, "%c", s);
     s_prev = s;
   }
   return 0;
@@ -87,6 +88,11 @@ void flag_n(int *number, char s_prev, char s) {
     (*number)++;
     fprintf(stdout, "%6d\t", *number);
   }
+}
+
+void flag_t(char s){
+  if(s=='\t')
+    fprintf(stdout, "^I");
 }
 
 int main(int argc, char *argv[]) {
