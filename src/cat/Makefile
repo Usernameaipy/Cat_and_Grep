@@ -15,7 +15,7 @@ common.o : ../common/common.c ../common/common.h
 	$(CC) $(CFLAGS) -c ../common/common.c -o common.o
 
 start_cat: 
-	$(BUILDDIR)cat -e -t test.txt text.txt gpg.txt
+	$(BUILDDIR)cat
 
 clean : 
 	rm -rf *.o

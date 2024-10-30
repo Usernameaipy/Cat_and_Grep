@@ -60,12 +60,23 @@ void cat(int argc, char **argv, options *flag) {
 int output(FILE *fp, options *flag) {
   char s = 0, s_prev = 0;
   static int number = 0;
+  int blank_line = 0;
   while ((s = fgetc((fp == NULL) ? stdin : fp)) != EOF) {
+    if (s == '\n' && s_prev == '\n') {
+      if (flag->s && blank_line) {
+        continue;
+      }
+      blank_line = 1;
+    } else {
+      blank_line = 0;
+    }
     if (flag->b) flag_b(&number, s, s_prev);
     if (flag->n) flag_n(&number, s_prev, s);
     if (flag->e || flag->E) flag_e(s);
     if (flag->t || flag->T) flag_t(s);
-    if((flag->t && s!='\t') || (!flag->t)) fprintf(stdout, "%c", s);
+    if (((flag->t && s != '\t') || (!flag->t)) &&
+        ((flag->T && s != '\t') || (!flag->T)))
+      fprintf(stdout, "%c", s);
     s_prev = s;
   }
   return 0;
@@ -90,9 +101,8 @@ void flag_n(int *number, char s_prev, char s) {
   }
 }
 
-void flag_t(char s){
-  if(s=='\t')
-    fprintf(stdout, "^I");
+void flag_t(char s) {
+  if (s == '\t') fprintf(stdout, "^I");
 }
 
 int main(int argc, char *argv[]) {
