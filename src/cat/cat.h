@@ -20,5 +20,6 @@ void flag_b(int *, char, char);
 void flag_e(char);
 void flag_n(int *, char, char);
 void flag_t(char);
+void flag_v(int *, char);
 void mutual_exclusion(options *);
 #endif
