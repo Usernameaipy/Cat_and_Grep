@@ -3,7 +3,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11
 BUILDDIR = ../../build/
 # TESTFLAGS = 
 
-all : cat start_cat
+all : cat clean_o
 
 cat : cat.o common.o
 	$(CC) $(CFLAGS) cat.o common.o -o $(BUILDDIR)cat
@@ -14,11 +14,10 @@ cat.o : cat.c cat.h
 common.o : ../common/common.c ../common/common.h
 	$(CC) $(CFLAGS) -c ../common/common.c -o common.o
 
-start_cat: 
-	$(BUILDDIR)cat -E -T -s -b -n -v
-
-clean : 
+clean_o :
 	rm -rf *.o
+
+clean : clean_o
 	rm -rf *.txt
 	rm -rf $(BUILDDIR)cat
 
