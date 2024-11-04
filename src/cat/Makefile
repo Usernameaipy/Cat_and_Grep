@@ -15,10 +15,11 @@ common.o : ../common/common.c ../common/common.h
 	$(CC) $(CFLAGS) -c ../common/common.c -o common.o
 
 start_cat: 
-	$(BUILDDIR)cat -T -v -b -e -n -s gpg.txt
+	$(BUILDDIR)cat -E -T -s -b -n -v
 
 clean : 
 	rm -rf *.o
+	rm -rf *.txt
 	rm -rf $(BUILDDIR)cat
 
 rebuild : clean all

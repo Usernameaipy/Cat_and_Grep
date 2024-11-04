@@ -1,5 +1,16 @@
 #include "cat.h"
 
+int main(int argc, char *argv[]) {
+  options *flag = flags(argc, argv);
+  mutual_exclusion(flag);
+  if (!flag->no_flags)
+    cat(argc, argv, flag);
+  else
+    fprintf(stderr, "usage: %s [-beEntsTv] [--number ...]\n", argv[0]);
+  free(flag);
+  return 0;
+}
+
 options *flags(int argc, char **argv) {
   options *flags = (options *)malloc(sizeof(options));
   const char small_fl[] = "beEnsTtv";
@@ -43,18 +54,12 @@ void mutual_exclusion(options *flag) {
 
 void cat(int argc, char **argv, options *flag) {
   FILE *fp = NULL;
-  if (flag->no_flags) {
-    printf("ERROR\n");
-    return;
-  }
-  for (int i = optind; i < argc; ++i) {
-    fp = fopen(argv[i], "r");
-    if (fp != NULL) {
-      output(fp, flag);
-      fclose(fp);
-    } else {
-      printf("ERROR\n");
-    }
+  for (int i = optind; i < argc || optind == argc; ++i) {
+    int flag_open = 0;
+    if (i < argc || optind != argc)
+      fp = file_open(fp, argv[i], argv, i, &flag_open);
+    if ((optind == argc) || (i < argc && !flag_open)) output(fp, flag);
+    if (fp != NULL) fclose(fp);
   }
 }
 
@@ -121,12 +126,4 @@ void flag_v(int *fl, char s) {
     *fl = 1;
   } else
     *fl = 0;
-}
-
-int main(int argc, char *argv[]) {
-  options *flag = flags(argc, argv);
-  mutual_exclusion(flag);
-  cat(argc, argv, flag);
-  free(flag);
-  return 0;
 }
