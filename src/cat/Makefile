@@ -1,7 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11
 BUILDDIR = ../../build/
-# TESTFLAGS = 
 
 all : cat clean_o
 
