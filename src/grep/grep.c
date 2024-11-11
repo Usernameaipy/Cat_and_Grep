@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[]) {
   options *flag = flags(argc, argv);
+  if (flag) free_options(flag);
   return 0;
 }
 
@@ -107,4 +108,16 @@ void flags_cycle(int argc, char **argv, options *flags, const char *short_flag,
     else
       flags->no_flags = 1;
   }
+}
+
+void free_options(options *flags) {
+  for (int i = 0; i < 2; i++) {
+    feflags_t *stru = (i == 0) ? flags->regex : flags->f_filename;
+    for (size_t i = 0; i < stru->size_max; i++) {
+      if (stru->matrix) free(stru->matrix[i]);
+    }
+    free(stru->matrix);
+    (i == 0) ? free(flags->regex) : free(flags->f_filename);
+  }
+  free(flags);
 }

@@ -27,4 +27,5 @@ style_check :
 style :
 	find . -name "*.c" -o -name "*.h" | xargs clang-format -style=Google -i
 
-#valgrind
+valgrind : clean
+	make grep && valgrind --tool=memcheck --leak-check=yes --track-origins=yes $(BUILDDIR)grep
