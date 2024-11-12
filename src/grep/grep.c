@@ -123,6 +123,16 @@ void free_options(options *flags) {
     if (flags->regex || flags->f_filename)
       (i == 0) ? free(flags->regex) : free(flags->f_filename);
   }
-  if(flags)
-    free(flags);
+  if (flags) free(flags);
+}
+
+void grep(options *flags, int argc, char **argv) {
+  FILE *fp = NULL;
+  for (int i = optind; i < argc || optind == argc; ++i) {
+    int flag_open = 0;
+    if (i < argc || optind != argc)
+      fp = file_open(fp, argv[i], argv, i, &flag_open);
+    if ((optind == argc) || (i < argc && !flag_open)) output(fp, flags);
+    if (fp != NULL) fclose(fp);
+  }
 }

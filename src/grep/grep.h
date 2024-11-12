@@ -28,4 +28,6 @@ void add_matrix(feflags_t *, int);
 void add_fe_arg(feflags_t *, char *, int);
 void fe_flag(options *, int);
 void free_options(options *);
+void grep(options *, int, char **);
+void output(FILE *, options *);
 #endif
