@@ -10,16 +10,19 @@ options *flags(int argc, char **argv) {
   options *flags = create_flags();
   const char *short_flag = "e:ivclnhsf:o";
   const struct option long_options[] = {{NULL, 0, NULL, 0}};
-  flags_cycle(argc, argv, flags, short_flag, long_options);
+  if (flags) flags_cycle(argc, argv, flags, short_flag, long_options);
   return flags;
 }
 
 options *create_flags(void) {
   options *flags = (options *)malloc(sizeof(options));
+  if (!flags) return NULL;
   flags->regex = NULL;
   flags->f_filename = NULL;
   flags->regex = (feflags_t *)malloc(sizeof(feflags_t));
+  if (!flags->regex) return NULL;
   flags->f_filename = (feflags_t *)malloc(sizeof(feflags_t));
+  if (!flags->f_filename) return NULL;
   if (flags->regex && flags->f_filename) {
     feflags_t *stru = flags->regex;
     stru->matrix = (char **)malloc(sizeof(char *) * 2);
@@ -49,9 +52,9 @@ void add_matrix(feflags_t *stru, int flag) {
       if (new_matrix[i] != NULL) {
         strcpy(new_matrix[i], pref_matrix[i]);
       }
-      free(pref_matrix[i]);
+      if (pref_matrix[i]) free(pref_matrix[i]);
     }
-    free(pref_matrix);
+    if (pref_matrix) free(pref_matrix);
   } else {
     new_matrix = NULL;
   }
@@ -114,10 +117,12 @@ void free_options(options *flags) {
   for (int i = 0; i < 2; i++) {
     feflags_t *stru = (i == 0) ? flags->regex : flags->f_filename;
     for (size_t i = 0; i < stru->size_max; i++) {
-      if (stru->matrix) free(stru->matrix[i]);
+      if (stru->matrix[i]) free(stru->matrix[i]);
     }
-    free(stru->matrix);
-    (i == 0) ? free(flags->regex) : free(flags->f_filename);
+    if (stru->matrix) free(stru->matrix);
+    if (flags->regex || flags->f_filename)
+      (i == 0) ? free(flags->regex) : free(flags->f_filename);
   }
-  free(flags);
+  if(flags)
+    free(flags);
 }
