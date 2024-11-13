@@ -79,9 +79,9 @@ void fe_flag(options *flags, int flag) {
   if (flag == 0) {
     flags->f = 1;
     add_fe_arg(flags->f_filename, optarg, flag);
-  } else {
+  } else if (flag == 1) {
     flags->e = 1;
-    add_fe_arg(flags->f_filename, optarg, flag);
+    add_fe_arg(flags->regex, optarg, flag);
   }
 }
 
@@ -130,13 +130,22 @@ void free_options(options *flags) {
 void grep(options *flags, int argc, char **argv) {
   FILE *fp = NULL;
   char searching_str[4096] = {0};
-  strcpy(searching_str, argv[optind]);
-  for (int i = optind + 1; i < argc || optind == argc; ++i) {
+  if (!flags->e) strcpy(searching_str, argv[optind]);
+  for (int i = (!flags->e) ? optind + 1 : optind; i < argc || optind == argc;
+       ++i) {
     int flag_open = 0;
     if (i < argc || optind != argc)
       fp = file_open(fp, argv[i], argv, i, &flag_open);
-    if ((optind == argc) || (i < argc && !flag_open))
-      output(fp, flags, searching_str);
+    if ((optind == argc) || (i < argc && !flag_open)) {
+      if (flags->e) {
+        feflags_t *reg = flags->regex;
+        for (size_t i = 0; i < reg->size_now; i++) {
+          strcpy(searching_str, reg->matrix[i]);
+          output(fp, flags, searching_str);
+        }
+      } else
+        output(fp, flags, searching_str);
+    }
     if (fp != NULL) fclose(fp);
   }
 }
