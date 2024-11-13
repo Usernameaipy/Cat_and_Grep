@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[]) {
   options *flag = flags(argc, argv);
+  grep(flag, argc, argv);
   if (flag) free_options(flag);
   return 0;
 }
@@ -128,11 +129,30 @@ void free_options(options *flags) {
 
 void grep(options *flags, int argc, char **argv) {
   FILE *fp = NULL;
-  for (int i = optind; i < argc || optind == argc; ++i) {
+  char searching_str[4096] = {0};
+  strcpy(searching_str, argv[optind]);
+  for (int i = optind + 1; i < argc || optind == argc; ++i) {
     int flag_open = 0;
     if (i < argc || optind != argc)
       fp = file_open(fp, argv[i], argv, i, &flag_open);
-    if ((optind == argc) || (i < argc && !flag_open)) output(fp, flags);
+    if ((optind == argc) || (i < argc && !flag_open))
+      output(fp, flags, searching_str);
     if (fp != NULL) fclose(fp);
+  }
+}
+
+void output(FILE *file, options *flags, char *searching_str) {
+  char buffer[4096] = {0};
+  regex_t regex;
+  int reg_flags = REG_EXTENDED;
+  while (fgets(buffer, 4096, file)) {
+    if (flags->i) reg_flags |= REG_ICASE;
+
+    if (regcomp(&regex, searching_str, reg_flags) != 0) return;
+    if (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) {
+      fprintf(stdout, "%s", buffer);
+      if (strchr(buffer, '\n') == NULL) fprintf(stdout, "\n");
+    }
+    regfree(&regex);
   }
 }
