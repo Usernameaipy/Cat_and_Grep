@@ -64,9 +64,9 @@ void cat(int argc, char **argv, options *flag) {
 }
 
 int output(FILE *fp, options *flag) {
-  char s = 0, s_prev = 0;
+  static char s = 0, s_prev = 0;
   static int number = 0;
-  int blank_line = 0;
+  static int blank_line = 0;
   while ((s = fgetc((fp == NULL) ? stdin : fp)) != EOF) {
     int fl_v = 0;
     if (s == '\n' && s_prev == '\n') {
