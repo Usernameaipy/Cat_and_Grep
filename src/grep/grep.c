@@ -129,6 +129,8 @@ void free_options(options *flags) {
 
 void grep(options *flags, int argc, char **argv) {
   FILE *fp = NULL;
+  int number_c = 0;
+  int files_open = 0;
   char searching_str[4096] = {0};
   if (!flags->e) strcpy(searching_str, argv[optind]);
   for (int i = (!flags->e) ? optind + 1 : optind; i < argc || optind == argc;
@@ -139,29 +141,45 @@ void grep(options *flags, int argc, char **argv) {
     if ((optind == argc) || (i < argc && !flag_open)) {
       if (flags->e) {
         feflags_t *reg = flags->regex;
-        for (size_t i = 0; i < reg->size_now; i++) {
-          strcpy(searching_str, reg->matrix[i]);
-          output(fp, flags, searching_str);
+        for (size_t j = 0; j < reg->size_now; j++) {
+          strcpy(searching_str, reg->matrix[j]);
+          output(fp, flags, searching_str, &number_c, (files_open>=1) ? argv[i] : (argv[i+1]) ? argv[i] : NULL);
         }
-      } else
-        output(fp, flags, searching_str);
+      } else{
+        output(fp, flags, searching_str, &number_c, (argv[i+1]) ? argv[i] : NULL);
+      }
     }
-    if (fp != NULL) fclose(fp);
+    if (fp!=NULL && flags->c) {
+      (files_open >= 1 || argv[i+1]) ? fprintf(stdout, "%s:%d\n", argv[i], number_c)
+                       : fprintf(stdout, "%d\n", number_c);
+      number_c = 0;
+    }
+    if (fp != NULL) {
+      fclose(fp);
+      files_open += 1;
+    }
   }
 }
 
-void output(FILE *file, options *flags, char *searching_str) {
+void output(FILE *file, options *flags, char *searching_str, int *number_c, char *fl_next_file) {
   char buffer[4096] = {0};
+  static int flag_called = 0;
   regex_t regex;
   int reg_flags = REG_EXTENDED;
   while (fgets(buffer, 4096, file)) {
     if (flags->i) reg_flags |= REG_ICASE;
 
     if (regcomp(&regex, searching_str, reg_flags) != 0) return;
-    if (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) {
+    if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
+        !flags->c) {
+      if(flag_called || fl_next_file) fprintf(stdout, "%s:", fl_next_file);
       fprintf(stdout, "%s", buffer);
       if (strchr(buffer, '\n') == NULL) fprintf(stdout, "\n");
-    }
+    } else if (flags->c &&
+               (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH
+                                                                  : 0))
+      *number_c += 1;
     regfree(&regex);
   }
+  flag_called+=1;
 }
