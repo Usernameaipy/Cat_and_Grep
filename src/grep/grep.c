@@ -86,9 +86,8 @@ void fe_flag(options *flags, int flag) {
   }
 }
 
-void mutual_exclusions(options *flags){
-  if(flags->l && flags->c)
-    flags->c=0;
+void mutual_exclusions(options *flags) {
+  if (flags->l && flags->c) flags->c = 0;
 }
 
 void flags_cycle(int argc, char **argv, options *flags, const char *short_flag,
@@ -176,17 +175,23 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
             char *fl_next_file) {
   char buffer[4096] = {0};
   static int flag_called = 0;
+  int flag_n = 0;
   regex_t regex;
   int reg_flags = REG_EXTENDED;
   while (fgets(buffer, 4096, file)) {
     if (flags->i) reg_flags |= REG_ICASE;
+    if (flags->n) flag_n += 1;
 
     if (regcomp(&regex, searching_str, reg_flags) != 0) return;
     if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
         !flags->c) {
-      if ((flag_called || fl_next_file) && !flags->l) fprintf(stdout, "%s:", fl_next_file);
-      if (!flags->l) fprintf(stdout, "%s", buffer);
-      if (strchr(buffer, '\n') == NULL) fprintf(stdout, "\n");
+      if ((flag_called || fl_next_file) && !flags->l)
+        fprintf(stdout, "%s:", fl_next_file);
+      if (!flags->l) {
+        if (flags->n) fprintf(stdout, "%d:", flag_n);
+        fprintf(stdout, "%s", buffer);
+      }
+      if (strchr(buffer, '\n') == NULL && !flags->l) fprintf(stdout, "\n");
     } else if (flags->c &&
                (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH
                                                                   : 0))
