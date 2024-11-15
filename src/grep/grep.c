@@ -143,15 +143,20 @@ void grep(options *flags, int argc, char **argv) {
         feflags_t *reg = flags->regex;
         for (size_t j = 0; j < reg->size_now; j++) {
           strcpy(searching_str, reg->matrix[j]);
-          output(fp, flags, searching_str, &number_c, (files_open>=1) ? argv[i] : (argv[i+1]) ? argv[i] : NULL);
+          output(fp, flags, searching_str, &number_c,
+                 (files_open >= 1) ? argv[i]
+                 : (argv[i + 1])   ? argv[i]
+                                   : NULL);
         }
-      } else{
-        output(fp, flags, searching_str, &number_c, (argv[i+1]) ? argv[i] : NULL);
+      } else {
+        output(fp, flags, searching_str, &number_c,
+               (argv[i + 1]) ? argv[i] : NULL);
       }
     }
-    if (fp!=NULL && flags->c) {
-      (files_open >= 1 || argv[i+1]) ? fprintf(stdout, "%s:%d\n", argv[i], number_c)
-                       : fprintf(stdout, "%d\n", number_c);
+    if (fp != NULL && flags->c) {
+      (files_open >= 1 || argv[i + 1])
+          ? fprintf(stdout, "%s:%d\n", argv[i], number_c)
+          : fprintf(stdout, "%d\n", number_c);
       number_c = 0;
     }
     if (fp != NULL) {
@@ -161,7 +166,8 @@ void grep(options *flags, int argc, char **argv) {
   }
 }
 
-void output(FILE *file, options *flags, char *searching_str, int *number_c, char *fl_next_file) {
+void output(FILE *file, options *flags, char *searching_str, int *number_c,
+            char *fl_next_file) {
   char buffer[4096] = {0};
   static int flag_called = 0;
   regex_t regex;
@@ -172,7 +178,7 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c, char
     if (regcomp(&regex, searching_str, reg_flags) != 0) return;
     if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
         !flags->c) {
-      if(flag_called || fl_next_file) fprintf(stdout, "%s:", fl_next_file);
+      if (flag_called || fl_next_file) fprintf(stdout, "%s:", fl_next_file);
       fprintf(stdout, "%s", buffer);
       if (strchr(buffer, '\n') == NULL) fprintf(stdout, "\n");
     } else if (flags->c &&
@@ -181,5 +187,5 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c, char
       *number_c += 1;
     regfree(&regex);
   }
-  flag_called+=1;
+  flag_called += 1;
 }
