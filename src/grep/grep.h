@@ -30,4 +30,5 @@ void fe_flag(options *, int);
 void free_options(options *);
 void grep(options *, int, char **);
 void output(FILE *, options *, char *, int *, char *);
+void mutual_exclusions(options *flags);
 #endif
