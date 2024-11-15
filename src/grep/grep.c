@@ -88,6 +88,7 @@ void fe_flag(options *flags, int flag) {
 
 void mutual_exclusions(options *flags) {
   if (flags->l && flags->c) flags->c = 0;
+  if (flags->h && flags->l) flags->h = 0;
 }
 
 void flags_cycle(int argc, char **argv, options *flags, const char *short_flag,
@@ -159,7 +160,7 @@ void grep(options *flags, int argc, char **argv) {
       }
     }
     if (fp != NULL && flags->c) {
-      (files_open >= 1 || argv[i + 1])
+      ((files_open >= 1 || argv[i + 1]) && !flags->h)
           ? fprintf(stdout, "%s:%d\n", argv[i], number_c)
           : fprintf(stdout, "%d\n", number_c);
       number_c = 0;
@@ -185,7 +186,7 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
     if (regcomp(&regex, searching_str, reg_flags) != 0) return;
     if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
         !flags->c) {
-      if ((flag_called || fl_next_file) && !flags->l)
+      if ((flag_called || fl_next_file) && !flags->l && !flags->h)
         fprintf(stdout, "%s:", fl_next_file);
       if (!flags->l) {
         if (flags->n) fprintf(stdout, "%d:", flag_n);
