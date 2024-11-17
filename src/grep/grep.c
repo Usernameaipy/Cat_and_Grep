@@ -143,7 +143,7 @@ void grep(options *flags, int argc, char **argv) {
        ++i) {
     int flag_open = 0;
     if (i < argc || optind != argc)
-      fp = file_open(fp, argv[i], argv, i, &flag_open);
+      fp = file_open(fp, argv[i], argv, i, &flag_open, (flags->s) ? 1 : 0);
     if ((optind == argc) || (i < argc && !flag_open)) {
       if (flags->e) {
         feflags_t *reg = flags->regex;

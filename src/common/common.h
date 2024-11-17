@@ -7,5 +7,5 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
-FILE* file_open(FILE*, char*, char**, int, int*);
+FILE* file_open(FILE*, char*, char**, int, int*, int);
 #endif
