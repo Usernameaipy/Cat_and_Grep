@@ -68,11 +68,22 @@ void add_fe_arg(feflags_t *stru, char *str, int flag) {
     char **mtr = stru->matrix;
     mtr[stru->size_now] =
         (char *)malloc(sizeof(char) * ((flag == 0) ? 256 : 1024));
-    if (mtr[stru->size_now]) {
+    if (mtr[stru->size_now] && check_validate(stru, str)) {
       strncpy(mtr[stru->size_now], str, (flag == 0) ? 256 : 1024);
       stru->size_now += 1;
     }
   }
+}
+
+int check_validate(feflags_t *stru, char *str){
+  int result = 1;
+  for(size_t i = 0; i<stru->size_now; i++){
+    if(strcmp(stru->matrix[i], str)==0){
+      result = 0;
+      return result;
+    }
+  }
+  return result;
 }
 
 void fe_flag(options *flags, int flag) {
@@ -171,6 +182,7 @@ void grep(options *flags, int argc, char **argv) {
                  (files_open >= 1) ? argv[i]
                  : (argv[i + 1])   ? argv[i]
                                    : NULL);
+          rewind(fp);
         }
       } else {
         output(fp, flags, searching_str, &number_c,
