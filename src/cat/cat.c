@@ -57,7 +57,7 @@ void cat(int argc, char **argv, options *flag) {
   for (int i = optind; i < argc || optind == argc; ++i) {
     int flag_open = 0;
     if (i < argc || optind != argc)
-      fp = file_open(fp, argv[i], argv, i, &flag_open, 0);
+      fp = file_open(fp, argv[i], argv, &flag_open, 0);
     if ((optind == argc) || (i < argc && !flag_open)) output(fp, flag);
     if (fp != NULL) fclose(fp);
   }
