@@ -4,7 +4,6 @@ int main(int argc, char *argv[]) {
   options *flag = flags(argc, argv);
   mutual_exclusions(flag);
   grep(flag, argc, argv);
-  if (flag) free_options(flag);
   return 0;
 }
 
@@ -120,6 +119,22 @@ void flags_cycle(int argc, char **argv, options *flags, const char *short_flag,
   }
 }
 
+void f_flag(options *flags, char **argv){
+  feflags_t *filename = flags->f_filename;
+  int flag_open = 0;
+  char buffer[4096] = {0};
+  for(size_t i = 0; i<filename->size_now; i++){
+    FILE *fp = file_open(fp, filename->matrix[i], argv, &flag_open, flags->s);
+    if (flag_open==1) return;
+    while(fgets(buffer, sizeof(buffer), fp)!=NULL){
+      buffer[strcspn(buffer, "\n")] = 0;
+      add_fe_arg(flags->regex, buffer, 1);
+    }
+    fclose(fp);
+  }
+  flags->e=1;
+}
+
 void free_options(options *flags) {
   for (int i = 0; i < 2; i++) {
     feflags_t *stru = (i == 0) ? flags->regex : flags->f_filename;
@@ -138,6 +153,9 @@ void grep(options *flags, int argc, char **argv) {
   int number_c = 0;
   int files_open = 0;
   char searching_str[4096] = {0};
+
+  if(flags->f) f_flag(flags, argv);
+
   if (!flags->e) strcpy(searching_str, argv[optind]);
   for (int i = (!flags->e) ? optind + 1 : optind; i < argc || optind == argc;
        ++i) {
@@ -182,8 +200,7 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
   while (fgets(buffer, 4096, file)) {
     if (flags->i) reg_flags |= REG_ICASE;
     if (flags->n) flag_n += 1;
-
-    if (regcomp(&regex, searching_str, reg_flags) != 0) return;
+    if (regcomp(&regex, searching_str, reg_flags)!=0) return;
     if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
         !flags->c) {
       if ((flag_called || fl_next_file) && !flags->l && !flags->h)
