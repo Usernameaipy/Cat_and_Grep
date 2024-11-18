@@ -75,10 +75,10 @@ void add_fe_arg(feflags_t *stru, char *str, int flag) {
   }
 }
 
-int check_validate(feflags_t *stru, char *str){
+int check_validate(feflags_t *stru, char *str) {
   int result = 1;
-  for(size_t i = 0; i<stru->size_now; i++){
-    if(strcmp(stru->matrix[i], str)==0){
+  for (size_t i = 0; i < stru->size_now; i++) {
+    if (strcmp(stru->matrix[i], str) == 0) {
       result = 0;
       return result;
     }
@@ -130,20 +130,20 @@ void flags_cycle(int argc, char **argv, options *flags, const char *short_flag,
   }
 }
 
-void f_flag(options *flags, char **argv){
+void f_flag(options *flags, char **argv) {
   feflags_t *filename = flags->f_filename;
   int flag_open = 0;
   char buffer[4096] = {0};
-  for(size_t i = 0; i<filename->size_now; i++){
+  for (size_t i = 0; i < filename->size_now; i++) {
     FILE *fp = file_open(fp, filename->matrix[i], argv, &flag_open, flags->s);
-    if (flag_open==1) return;
-    while(fgets(buffer, sizeof(buffer), fp)!=NULL){
+    if (flag_open == 1) return;
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
       buffer[strcspn(buffer, "\n")] = 0;
       add_fe_arg(flags->regex, buffer, 1);
     }
     fclose(fp);
   }
-  flags->e=1;
+  flags->e = 1;
 }
 
 void free_options(options *flags) {
@@ -165,7 +165,7 @@ void grep(options *flags, int argc, char **argv) {
   int files_open = 0;
   char searching_str[4096] = {0};
 
-  if(flags->f) f_flag(flags, argv);
+  if (flags->f) f_flag(flags, argv);
 
   if (!flags->e) strcpy(searching_str, argv[optind]);
   for (int i = (!flags->e) ? optind + 1 : optind; i < argc || optind == argc;
@@ -212,7 +212,7 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
   while (fgets(buffer, 4096, file)) {
     if (flags->i) reg_flags |= REG_ICASE;
     if (flags->n) flag_n += 1;
-    if (regcomp(&regex, searching_str, reg_flags)!=0) return;
+    if (regcomp(&regex, searching_str, reg_flags) != 0) return;
     if ((regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH : 0) &&
         !flags->c) {
       if ((flag_called || fl_next_file) && !flags->l && !flags->h)
@@ -221,8 +221,9 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
         if (flags->n) fprintf(stdout, "%d:", flag_n);
         fprintf(stdout, "%s", (flags->o) ? searching_str : buffer);
       }
-      if (strchr(buffer, '\n') == NULL && !flags->l && !flags->o) fprintf(stdout, "\n");
-      if(flags->o) fprintf(stdout,"\n");
+      if (strchr(buffer, '\n') == NULL && !flags->l && !flags->o)
+        fprintf(stdout, "\n");
+      if (flags->o) fprintf(stdout, "\n");
     } else if (flags->c &&
                (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH
                                                                   : 0))

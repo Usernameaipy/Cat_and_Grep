@@ -32,5 +32,5 @@ void grep(options *, int, char **);
 void output(FILE *, options *, char *, int *, char *);
 void f_flag(options *, char **);
 void mutual_exclusions(options *);
-int check_validate(feflags_t*, char*);
+int check_validate(feflags_t *, char *);
 #endif
