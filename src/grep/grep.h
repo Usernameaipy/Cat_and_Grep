@@ -22,7 +22,7 @@ typedef struct options {
   feflags_t *f_filename;
 } options;
 options *flags(int, char **);
-void flags_cycle(int, char **a, options *, const char *, const struct option *);
+void flags_cycle(int, char **, options *, const char *, const struct option *);
 options *create_flags(void);
 void add_matrix(feflags_t *, int);
 void add_fe_arg(feflags_t *, char *, int);

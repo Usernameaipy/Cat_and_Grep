@@ -219,9 +219,10 @@ void output(FILE *file, options *flags, char *searching_str, int *number_c,
         fprintf(stdout, "%s:", fl_next_file);
       if (!flags->l) {
         if (flags->n) fprintf(stdout, "%d:", flag_n);
-        fprintf(stdout, "%s", buffer);
+        fprintf(stdout, "%s", (flags->o) ? searching_str : buffer);
       }
-      if (strchr(buffer, '\n') == NULL && !flags->l) fprintf(stdout, "\n");
+      if (strchr(buffer, '\n') == NULL && !flags->l && !flags->o) fprintf(stdout, "\n");
+      if(flags->o) fprintf(stdout,"\n");
     } else if (flags->c &&
                (regexec(&regex, buffer, 0, NULL, 0) == (flags->v) ? REG_NOMATCH
                                                                   : 0))
